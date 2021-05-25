@@ -67,6 +67,7 @@ def tensor_sum(tensor: Tensor) -> Tensor:
     if requires_grad:
         def grad_fun(grad: np.ndarray) -> np.ndarray:
             return grad * np.ones_like(tensor.data)
+        depends_on = [Dependency(tensor, grad_fun)]
     else:
         depends_on = []
 
