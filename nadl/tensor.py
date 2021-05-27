@@ -146,3 +146,17 @@ def mul(t1: Tensor, t2: Tensor) -> Tensor:
         depends_on.append(Dependency(t2, grad_fn2))
 
     return Tensor(data, requires_grad, depends_on)
+
+
+def negative(t: Tensor) -> Tensor:
+    data = -t.data
+    requires_grad = t.requires_grad
+    if requires_grad:
+        depends_on = [Dependency(t, lambda x: -x)]
+    else:
+        depends_on = []
+    return Tensor(data, requires_grad, depends_on)
+
+
+def sub(t1: Tensor, t2: Tensor) -> Tensor:
+    return add(t1, negative(t2))
