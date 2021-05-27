@@ -15,7 +15,6 @@ Naive Automatic Differentiation Library (nadl) a small framework that can perfor
 This framework is very simple implementation of how other big framworks do gradient calculation using
 Numerical Automatic Differentiation.
 
-<br>
 
 ## Installation
 
@@ -25,7 +24,6 @@ $ cd nadl
 $ python3 setup.py install
 ```
 
-<br>
 
 ## Getting Started
 
@@ -33,8 +31,6 @@ The quickest way to start using nadl:
 - Clone this repository and install.
 - Make a python file and import ```nadl```.
 - Write your code.
-
-<br>
 
 Example:
 ```
@@ -45,7 +41,6 @@ t2 = Tensor([4, 5, 6], requires_grad=True)
 t3 = add(t1, t2)
 ```
 
-<br>
 
 ## Testing
 

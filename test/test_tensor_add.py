@@ -1,5 +1,4 @@
 import unittest
-import pytest
 from nadl.tensor import Tensor, add
 
 
