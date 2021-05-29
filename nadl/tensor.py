@@ -18,6 +18,16 @@ def ensure_array(arrayable: Arrayable) -> np.ndarray:
         return np.array(arrayable)
 
 
+Tensorable = Union["Tensor", float, np.ndarray]
+
+
+def ensure_tensor(tensorable: Tensorable) -> "Tensor":
+    if isinstance(tensorable, Tensor):
+        return tensorable
+    else:
+        return Tensor(tensorable)
+
+
 class Tensor():
     def __init__(self,
                  data: np.ndarray,
@@ -40,6 +50,38 @@ class Tensor():
 
     def __repr__(self) -> str:
         return f"Tensor({self.data}, requires_grad={self.requires_grad})"
+
+    def __add__(self, other) -> "Tensor":
+        "t + other"
+        return _add(self, ensure_tensor(other))
+
+    def __radd__(self, other) -> "Tensor":
+        "other + t"
+        return _add(ensure_tensor(other), self)
+
+    def __iadd__(self, other) -> "Tensor":
+        pass
+
+    def __mul__(self, other) -> "Tensor":
+        return _mul(self, ensure_tensor(other))
+
+    def __rmul__(self, other) -> "Tensor":
+        return _mul(ensure_tensor(other), self)
+
+    def __imul__(self, other) -> "Tensor":
+        pass
+
+    def __neg__(self) -> "Tensor":
+        return _negative(self)
+
+    def __sub__(self, other) -> "Tensor":
+        return _sub(self, ensure_tensor(other))
+
+    def __rsub__(self, other) -> "Tensor":
+        return _sub(ensure_tensor(other), self)
+
+    def __isub__(self, other) -> "Tensor":
+        pass
 
     def backward(self, grad: "Tensor" = None) -> None:
         assert self.requires_grad, "called backward on non requires grad tensor"
@@ -74,7 +116,7 @@ def tensor_sum(t: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def add(t1: Tensor, t2: Tensor) -> Tensor:
+def _add(t1: Tensor, t2: Tensor) -> Tensor:
     data = t1.data + t2.data
     requires_grad = t1.requires_grad or t2.requires_grad
 
@@ -109,7 +151,7 @@ def add(t1: Tensor, t2: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def mul(t1: Tensor, t2: Tensor) -> Tensor:
+def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     data = t1.data * t2.data
     requires_grad = t1.requires_grad or t2.requires_grad
 
@@ -148,7 +190,7 @@ def mul(t1: Tensor, t2: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def negative(t: Tensor) -> Tensor:
+def _negative(t: Tensor) -> Tensor:
     data = -t.data
     requires_grad = t.requires_grad
     if requires_grad:
@@ -158,5 +200,5 @@ def negative(t: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def sub(t1: Tensor, t2: Tensor) -> Tensor:
-    return add(t1, negative(t2))
+def _sub(t1: Tensor, t2: Tensor) -> Tensor:
+    return t1 + (-t2)
