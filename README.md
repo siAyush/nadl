@@ -38,7 +38,7 @@ from nadl.tensor import Tensor, add
 
 t1 = Tensor([1, 2, 3], requires_grad=True)
 t2 = Tensor([4, 5, 6], requires_grad=True)
-t3 = add(t1, t2)
+t3 = t1 + t2
 ```
 
 
