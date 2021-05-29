@@ -1,13 +1,13 @@
 import numpy as np
-from nadl.tensor import Tensor
+from nadl import Tensor, Parameter
 
 
 x = Tensor(np.random.randn(100, 3))
 coef = Tensor(np.array([-1, +3, -2], dtype=np.float))
 y = x @ coef + 5
 
-w = Tensor(np.random.randn(3), requires_grad=True)
-b = Tensor(np.random.randn(), requires_grad=True)
+w = Parameter(3)
+b = Parameter()
 learning_rate = 0.001
 batch_size = 32
 
