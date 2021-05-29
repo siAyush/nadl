@@ -34,7 +34,7 @@ The quickest way to start using nadl:
 
 Example:
 ```
-from nadl.tensor import Tensor, add
+from nadl.tensor import Tensor
 
 t1 = Tensor([1, 2, 3], requires_grad=True)
 t2 = Tensor([4, 5, 6], requires_grad=True)

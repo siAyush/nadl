@@ -60,7 +60,11 @@ class Tensor():
         return _add(ensure_tensor(other), self)
 
     def __iadd__(self, other) -> "Tensor":
-        pass
+        """when we do t += other"""
+        self.data = self.data + ensure_tensor(other).data
+        # Invalidate the gradient
+        self.grad = None
+        return self
 
     def __mul__(self, other) -> "Tensor":
         return _mul(self, ensure_tensor(other))
@@ -69,7 +73,10 @@ class Tensor():
         return _mul(ensure_tensor(other), self)
 
     def __imul__(self, other) -> "Tensor":
-        pass
+        """when we do t *= other"""
+        self.data = self.data * ensure_tensor(other).data
+        self.grad = None
+        return self
 
     def __neg__(self) -> "Tensor":
         return _negative(self)
@@ -81,7 +88,10 @@ class Tensor():
         return _sub(ensure_tensor(other), self)
 
     def __isub__(self, other) -> "Tensor":
-        pass
+        """when we do t -= other"""
+        self.data = self.data - ensure_tensor(other).data
+        self.grad = None
+        return self
 
     def backward(self, grad: "Tensor" = None) -> None:
         assert self.requires_grad, "called backward on non requires grad tensor"
