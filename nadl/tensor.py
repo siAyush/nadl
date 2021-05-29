@@ -33,7 +33,7 @@ class Tensor():
                  data: np.ndarray,
                  requires_grad: bool = False,
                  depends_on: List[Dependency] = None) -> None:
-        self.data = ensure_array(data)
+        self._data = ensure_array(data)
         self.requires_grad = requires_grad
         self.depends_on = depends_on or []
         self.shape = self.data.shape
@@ -41,6 +41,16 @@ class Tensor():
 
         if self.requires_grad:
             self.zero_grad()
+
+    @property
+    def data(self) -> np.ndarray:
+        return self._data
+
+    @data.setter
+    def data(self, new_data: np.ndarray) -> None:
+        self._data = new_data
+        # setting the data manually means we invalidate the gradient.
+        self.grad = None
 
     def zero_grad(self) -> None:
         self.grad = Tensor(np.zeros_like(self.data, dtype=np.float64))
@@ -62,8 +72,6 @@ class Tensor():
     def __iadd__(self, other) -> "Tensor":
         """when we do t += other"""
         self.data = self.data + ensure_tensor(other).data
-        # Invalidate the gradient
-        self.grad = None
         return self
 
     def __mul__(self, other) -> "Tensor":
@@ -75,7 +83,6 @@ class Tensor():
     def __imul__(self, other) -> "Tensor":
         """when we do t *= other"""
         self.data = self.data * ensure_tensor(other).data
-        self.grad = None
         return self
 
     def __neg__(self) -> "Tensor":
@@ -90,8 +97,10 @@ class Tensor():
     def __isub__(self, other) -> "Tensor":
         """when we do t -= other"""
         self.data = self.data - ensure_tensor(other).data
-        self.grad = None
         return self
+
+    def __matmul__(self, other) -> "Tensor":
+        return _matmul(self, other)
 
     def backward(self, grad: "Tensor" = None) -> None:
         assert self.requires_grad, "called backward on non requires grad tensor"
@@ -212,3 +221,21 @@ def _negative(t: Tensor) -> Tensor:
 
 def _sub(t1: Tensor, t2: Tensor) -> Tensor:
     return t1 + (-t2)
+
+
+def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
+    data = t1.data @ t2.data
+    requires_grad = t1.requires_grad or t2.requires_grad
+    depends_on: List[Dependency] = []
+
+    if t1.requires_grad:
+        def grad_fn1(grad: np.ndarray) -> np.ndarray:
+            return grad @ t2.data.T
+        depends_on.append(Dependency(t1, grad_fn1))
+
+    if t2.requires_grad:
+        def grad_fn2(grad: np.ndarray) -> np.ndarray:
+            return t1.data.T @ grad
+        depends_on.append(Dependency(t2, grad_fn2))
+
+    return Tensor(data, requires_grad, depends_on)

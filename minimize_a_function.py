@@ -10,4 +10,3 @@ for i in range(100):
     delta_x = 0.1 * x.grad
     x -= delta_x
     print(i, sum_of_squares)
-# print(x.zero_grad())
