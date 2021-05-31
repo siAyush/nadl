@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="License" src="assets/nadl.gif" />
+    <img alt="logo" src="assets/nadl.gif" />
 </p>
 
 <p align="center">
