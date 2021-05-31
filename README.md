@@ -33,7 +33,7 @@ The quickest way to start using nadl:
 - Write your code.
 
 Example:
-```
+```python
 from nadl.tensor import Tensor
 
 t1 = Tensor([1, 2, 3], requires_grad=True)
